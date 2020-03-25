@@ -5,8 +5,13 @@ import tensorflow as tf
 
 class pr4:
     def __init__(self):
-        self.data = np.array([[1, 2, 1],
-                    [2, 2, 2]])
+        self.data = np.array([[0, 0, 0],
+                             [1, 1, 1],
+                             [0, 0, 1],
+                             [0, 1, 1],
+                             [0, 1, 0],
+                             [1, 0, 1],
+                              [1, 0, 0]])
         self.model = self.get_model()
 
 
@@ -15,8 +20,8 @@ class pr4:
 
     def get_model(self):
         model = Sequential()
-        model.add(Dense(4, activation='relu', input_shape=(3,)))
-        model.add(Dense(4, activation='relu'))
+        model.add(Dense(16, activation='relu', input_shape=(3,)))
+        model.add(Dense(16, activation='relu'))
         model.add(Dense(1, activation='sigmoid'))
 
         model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy'])
@@ -67,12 +72,13 @@ class pr4:
         assert np.isclose(a, c).all()
         self.print_res(a, b, c)
         train_res = np.array([int(self.operation(x)) for x in self.data])
-        self.model.fit(self.data, train_res, epochs=150, batch_size=1)
+        self.model.fit(self.data, train_res, epochs=200, batch_size=1)
 
         [a, b, c] = self.get_res()
         assert np.isclose(a, b).all()
         assert np.isclose(a, c).all()
         self.print_res(a, b, c)
+        print("Real res:\n {}".format([self.operation(el) for el in self.data]))
 
 practice = pr4()
 practice.start()
