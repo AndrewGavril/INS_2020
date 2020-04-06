@@ -79,12 +79,14 @@ class pr5:
         decoded = Dense(6, activation='tanh')(encoded)
         decoded = Dense(32, activation='relu')(decoded)
         decoded = Dense(32, activation='tanh')(decoded)
-        decoded = Dense(6, activation='tanh', name='decoder_output')(decoded)
+        decoded = Dense(6, activation='linear', name='decoder_output')(decoded)
 
-        regr = Dense(64, activation='tanh')(encoded)
+        regr = Dense(64, activation='relu')(encoded)
+        regr = Dense(64, activation='tanh')(regr)
+        regr = Dense(64, activation='tanh')(regr)
         regr = Dense(64, activation='tanh')(regr)
         regr = Dense(32, activation='tanh')(regr)
-        regr = Dense(1, name="regr_output")(regr)
+        regr = Dense(1, activation='linear', name="regr_output")(regr)
 
         regr = Model(input, outputs = [regr, decoded], name="regr")
         encoded = Model(input, encoded, name="encoder")
