@@ -13,13 +13,12 @@ class Net:
 
 
     def __set_params(self):
-        self.num_epochs = 25
-        self.batch_size = 100
-        self.pool_size = 2
+        self.num_epochs = 20
+        self.batch_size = 80
+        self.pool_size = (2, 2)
         self.conv_depth_1 = 32
         self.conv_depth_2 = 64
-        self.conv_depth_3 = 128
-        self.drop_prob_1 = 0.2
+        self.drop_prob_1 = 0.25
         self.drop_prob_2 = 0.5
         self.hidden_size = 512
 
@@ -29,7 +28,7 @@ class Net:
                                padding='same', strides=(1, 1), activation='relu')(inp)
         conv_2 = Convolution2D(self.conv_depth_1, (kernel_size, kernel_size),
                                padding='same', activation='relu')(conv_1)
-        pool_1 = MaxPooling2D(pool_size=(self.pool_size, self.pool_size))(conv_2)
+        pool_1 = MaxPooling2D(pool_size=self.pool_size)(conv_2)
         if hasDropout:
             drop_1 = Dropout(self.drop_prob_1)(pool_1)
         else:
@@ -38,21 +37,12 @@ class Net:
                                padding='same', strides=(1, 1), activation='relu')(drop_1)
         conv_4 = Convolution2D(self.conv_depth_2, (kernel_size, kernel_size),
                                padding='same', strides=(1, 1), activation='relu')(conv_3)
-        pool_2 = MaxPooling2D(pool_size=(self.pool_size, self.pool_size))(conv_4)
+        pool_2 = MaxPooling2D(pool_size=self.pool_size)(conv_4)
         if hasDropout:
             drop_2 = Dropout(self.drop_prob_1)(pool_2)
         else:
             drop_2 = pool_2
-        conv_5 = Convolution2D(self.conv_depth_3, (kernel_size, kernel_size),
-                               padding='same', strides=(1, 1), activation='relu')(drop_2)
-        conv_6 = Convolution2D(self.conv_depth_3, (kernel_size, kernel_size),
-                               padding='same', strides=(1, 1), activation='relu')(conv_5)
-        pool_3 = MaxPooling2D(pool_size=(self.pool_size, self.pool_size))(conv_6)
-        if hasDropout:
-            drop_3 = Dropout(self.drop_prob_1)(pool_3)
-        else:
-            drop_3 = pool_3
-        flat = Flatten()(drop_3)
+        flat = Flatten()(drop_2)
         hidden = Dense(self.hidden_size, activation='relu')(flat)
         if hasDropout:
             drop_4 = Dropout(self.drop_prob_2)(hidden)
@@ -76,24 +66,22 @@ class Net:
         plt.title('Model loss with kernel size = ' + str(kernel_size) + hasDropout)
         plt.ylabel('Loss')
         plt.xlabel('Epoch')
-        plt.xlim(x[0], x[-1])
         plt.legend(['Train', 'Test'], loc='upper left')
-        plt.clf()
-        plt.plot(x, history.history['accuracy'])
-        plt.plot(x, history.history['val_accuracy'])
+        plt.show()
+        plt.plot(x, history.history['acc'])
+        plt.plot(x, history.history['val_acc'])
         plt.title('Model accuracy with kernel size = ' + str(kernel_size) + hasDropout)
         plt.ylabel('Accuracy')
         plt.xlabel('Epoch')
-        plt.xlim(x[0], x[-1])
         plt.legend(['Train', 'Test'], loc='upper left')
-        plt.clf()
+        plt.show()
 
     def lab5(self):
         model = self.build_model()
-        #history = model.fit(self.x_train, self.y_train,
-        #                    batch_size=self.batch_size, epochs=self.num_epochs,
-        #                    verbose=1, validation_split=0.1)
-        #self.plot(history, True, 3)
+        history = model.fit(self.x_train, self.y_train,
+                            batch_size=self.batch_size, epochs=self.num_epochs,
+                            verbose=1, validation_split=0.1)
+        self.plot(history, True, 3)
         model = self.build_model(hasDropout=False)
         history = model.fit(self.x_train, self.y_train,
                             batch_size=self.batch_size, epochs=self.num_epochs,
